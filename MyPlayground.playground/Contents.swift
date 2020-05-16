@@ -17,6 +17,9 @@ class GameScene: SKScene {
         let playerSprite = childNode(withName: Identifiers.kPlayer) as? SKSpriteNode
         playerSpriteViewModel = PlayerSpriteViewModel(playerSprite: playerSprite)
 
+        let bgSound = SKAudioNode(fileNamed: "Background.mp3")
+        addChild(bgSound)
+
         let beamSprite = childNode(withName: Identifiers.kBeam) as? SKSpriteNode
         let beamSize = beamSprite?.size ?? .zero
         let anchorPoint = beamSprite?.anchorPoint ?? CGPoint.zero
@@ -25,6 +28,7 @@ class GameScene: SKScene {
         beamSprite?.physicsBody?.categoryBitMask = PhysicsCategory.none
         beamSprite?.physicsBody?.contactTestBitMask = PhysicsCategory.player
         beamSprite?.physicsBody?.collisionBitMask = PhysicsCategory.none
+        beamSprite?.physicsBody?.usesPreciseCollisionDetection = true
 
         fadeIn(node: playerSprite, duration: 3.0, completion: { [weak self] in
             self?.playerSpriteViewModel?.animateRight{ [weak self] in
@@ -176,6 +180,7 @@ class GameScene: SKScene {
 
     private func startGame(){
 
+        playerSpriteViewModel?.updateMovement(allow: true)
         childNode(withName: Identifiers.kStoryBG)?.removeFromParent()
         childNode(withName: Identifiers.kWhatLabel)?.removeFromParent()
         run(SKAction.repeatForever(SKAction.sequence([SKAction.run(addBoulder), SKAction.wait(forDuration: 1.0)])))
@@ -207,6 +212,7 @@ class GameScene: SKScene {
         sprite.physicsBody?.categoryBitMask = categoryBitMask
         sprite.physicsBody?.contactTestBitMask = contactTestBitMask
         sprite.physicsBody?.collisionBitMask = PhysicsCategory.none
+        sprite.physicsBody?.usesPreciseCollisionDetection = true
 
         let x = randomPositionGenerator(left:  -size.width/2.0, right: size.width/2.0 - sprite.size.width/2.0)
         sprite.position = CGPoint(x: x, y: size.height)

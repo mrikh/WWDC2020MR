@@ -17,6 +17,10 @@ public class PlayerSpriteViewModel{
         return playerSprite?.position.x ?? 0.0
     }
 
+    public func updateMovement(allow : Bool){
+        allowMovement = allow
+    }
+
     public convenience init(playerSprite : SKSpriteNode?) {
 
         self.init()
@@ -48,7 +52,7 @@ public class PlayerSpriteViewModel{
         for i in stride(from: 8, to: 3, by: -1) {
             laserTextures.append(SKTexture(imageNamed: "Laser\(i)"))
         }
-        laserAnimation = SKAction.animate(with: laserTextures, timePerFrame: 0.12)
+        laserAnimation = SKAction.animate(with: laserTextures, timePerFrame: 0.25)
 
         let playerSize = playerSprite?.size ?? CGSize.zero
         playerSprite?.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: playerSize.width/2.0, height: playerSize.height))
@@ -61,7 +65,7 @@ public class PlayerSpriteViewModel{
 
     public func updateSpritePosition(x : CGFloat, direction : Direction){
 
-        if allowMovement {return}
+        if !allowMovement {return}
 
         playerSprite?.position.x = x
 
@@ -90,16 +94,16 @@ public class PlayerSpriteViewModel{
         for i in 1...6{
             laserTextures.append(SKTexture(imageNamed: "Beam\(i)"))
         }
-        let beamAnimation = SKAction.animate(with: laserTextures, timePerFrame: 0.1)
+        let beamAnimation = SKAction.animate(with: laserTextures, timePerFrame: 0.2)
 
-        allowMovement = true
+        allowMovement = false
         playerSprite?.removeAllActions()
         playerSprite?.run(animation, completion: { [weak self] in
-            self?.allowMovement = false
+            self?.allowMovement = true
         })
         laserNode?.position.x = (playerSprite?.position.x ?? 0.0) + 5.0
         laserNode?.physicsBody?.categoryBitMask = PhysicsCategory.laser
-        laserNode?.run(SKAction.sequence([SKAction.fadeIn(withDuration: 0.2), beamAnimation, SKAction.rotate(byAngle: CGFloat(Double.pi * 0.999), duration: 0.5), SKAction.rotate(byAngle: -CGFloat(Double.pi * 0.999), duration: 0.5),  SKAction.fadeOut(withDuration: 0.1)]), completion: {
+        laserNode?.run(SKAction.sequence([SKAction.fadeIn(withDuration: 0.1), beamAnimation, SKAction.rotate(byAngle: CGFloat(Double.pi * 0.999), duration: 1.0), SKAction.rotate(byAngle: -CGFloat(Double.pi * 0.999), duration: 1.0),  SKAction.fadeOut(withDuration: 0.1)]), completion: {
             laserNode?.physicsBody?.categoryBitMask = PhysicsCategory.none
         })
     }
